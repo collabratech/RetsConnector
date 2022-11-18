@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeTypes.Core;
 using CrestApps.RetsSdk.Contracts;
@@ -373,7 +373,8 @@ namespace CrestApps.RetsSdk.Services
 
                         foreach (MimePart part in multipart.OfType<MimePart>())
                         {
-                            files.Add(ProcessMessage(part));
+                            var fileFromMessage = ProcessMessage(part);
+                            if (fileFromMessage != null) files.Add(fileFromMessage);
                         }
 
                         return files;
@@ -412,7 +413,8 @@ namespace CrestApps.RetsSdk.Services
                         }
 
                         // At this point we know this is a single image response
-                        files.Add(ProcessMessage(message));
+                        var fileFromMessage = ProcessMessage(message);
+                        if (fileFromMessage != null) files.Add(fileFromMessage);
                     }
                 }
 
@@ -568,6 +570,8 @@ namespace CrestApps.RetsSdk.Services
 
             if (message.ContentLocation == null)
             {
+                if (message.Content == null || message.Content.Stream == null || message.Content.Stream.Length == 0) return null;
+
                 file.Content = new MemoryStream();
                 message.Content.DecodeTo(file.Content);
                 file.Content.Position = 0; // This is important otherwise the next seek with start at the end
