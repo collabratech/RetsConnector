@@ -303,7 +303,7 @@ namespace CrestApps.RetsSdk.Services
                 TResult result = await action.Invoke();
                 return result;
             }
-            catch
+            catch (Exception ex)
             {
                 throw;
             }
@@ -568,7 +568,7 @@ namespace CrestApps.RetsSdk.Services
                 file.IsPreferred = isPreferred;
             }
 
-            if (message.ContentLocation == null)
+            if (file.ContentLocation == null)
             {
                 if (message.Content == null || message.Content.Stream == null || message.Content.Stream.Length == 0) return null;
 
